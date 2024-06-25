@@ -57,39 +57,25 @@
         </ul>
       </div>
       <div class="col-md-9" id="main">
-        <h3 v-if="module" style="margin-top: 0">{{module.name}}</h3>
-        <el-table
-            ref="multipleTable"
-            :data="apiList"
-            tooltip-effect="dark"
-            style="width: 100%"
-            @selection-change="handleSelectionChange">
-          <el-table-column
-                  type="selection"
-                  width="55">
-          </el-table-column>
-          <el-table-column
-                  prop="label"
-                  label="接口名称"
-                  width="120">
-          </el-table-column>
-          <el-table-column
-                  prop="method"
-                  label="请求方法"
-                  show-overflow-tooltip>
-          </el-table-column>
-          <el-table-column
-                  prop="path"
-                  label="请求地址">
-          </el-table-column>
-          <el-table-column
-                  fixed="right"
-                  label="操作">
-            <template slot-scope="scope">
-              <a @click="apiShow(scope.row)" class="button">详情</a>
-            </template>
-          </el-table-column>
-        </el-table>
+        <h3 v-if="activeModule" style="margin-top: 0">{{activeModule.name}}</h3>
+        <table class="table table-hover">
+          <thead>
+          <tr>
+            <th style="min-width: 100px; max-width: 200px">接口名称</th>
+            <th style="width: 100px">请求方法</th>
+            <th style="min-width: 200px">请求地址</th>
+            <th style="min-width: 200px;">操作</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="(api, key) in apiList" @click="apiShow(api)">
+            <td>{{api.label}}</td>
+            <td>{{api.method}}</td>
+            <td>{{api.path}}</td>
+            <td><a @click="apiShow(api)" class="button">详情</a></td>
+          </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
@@ -171,7 +157,7 @@
         project: '',
         projects: [],
         modules: [],
-        module: null,
+        activeModule: null,
         api: null,
         apiDialogVisible: false,
         activeName: 'first',
@@ -209,7 +195,7 @@
       changeProject (project) {
         this.project = project
         this.modules = []
-        this.module = null
+        this.activeModule = null
         this.request('GET', apiUrl(), {action: 'api', project: project.key}, (data) => {
           this.modules = data
           if (Array.isArray(data) && data.length > 0) {
@@ -219,11 +205,11 @@
       },
 
       changeModule (module) {
-        this.module = module
+        this.activeModule = module
       },
 
       isActiveModule (module) {
-        return module.name === this.module.name
+        return module.name === this.activeModule.name
       },
 
       apiShow (api) {
@@ -241,7 +227,7 @@
     },
     computed: {
       apiList () {
-        return this?.module?.api || []
+        return this?.activeModule?.api || []
       }
     }
   }).$mount('#main')
