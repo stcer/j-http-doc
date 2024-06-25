@@ -7,7 +7,7 @@
   <link rel="stylesheet"
         href="//lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/twitter-bootstrap/3.3.5/css/bootstrap.min.css">
   <link rel="stylesheet"
-        href="https://s3.pstatp.com/cdn/element-ui/2.14.1/theme-chalk/index.css">
+        href="https://s3.pstatp.com/cdn/element-ui/2.15.7/theme-chalk/index.css">
   <style>
       .method-list {
           line-height: 200%;
@@ -68,7 +68,7 @@
           </tr>
           </thead>
           <tbody>
-          <tr v-for="(api, key) in apiList" @click="apiShow(api)">
+          <tr v-for="(api, key) in apiList">
             <td>{{api.label}}</td>
             <td>{{api.method}}</td>
             <td>{{api.path}}</td>
@@ -146,22 +146,21 @@
 <script type="text/javascript" src="//lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/jquery/2.1.4/jquery.min.js"></script>
 <script type="text/javascript"
         src="//lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/twitter-bootstrap/3.3.5/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="//lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/vue/2.5.13/vue.min.js"></script>
-<script type="text/javascript" src="https://s3.pstatp.com/cdn/element-ui/2.14.1/index.js"></script>
+<script type="text/javascript" src="//lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/vue/2.6.14/vue.min.js"></script>
+<script type="text/javascript" src="https://s3.pstatp.com/cdn/element-ui/2.15.7/index.js"></script>
 <script>
   const API_URL = 'api.php'
   var apiUrl = () => API_URL
   var app = new Vue({
     data: () => {
       return {
-        project: '',
         projects: [],
+        project: '',
         modules: [],
         activeModule: null,
         api: null,
         apiDialogVisible: false,
-        activeName: 'first',
-        multipleSelection: []
+        activeName: 'first'
       }
     },
     created () {
@@ -227,7 +226,7 @@
     },
     computed: {
       apiList () {
-        return this?.activeModule?.api || []
+        return this.activeModule?.api || []
       }
     }
   }).$mount('#main')

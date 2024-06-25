@@ -51,4 +51,33 @@ class Access
 class Message{
 
 }
+
+
+/**
+ * Class Product
+ * @package module\product
+ *
+ * @property int id, ID
+ * @property string corpid, 管理的企业ID
+ * @property string corp_app_id, 企业应用ID
+ * @property string title, 产品标题
+ * @property float price_origin, 原价
+ * @property float price, 价格
+ * @property string image, 封面图
+ * @property string images, 图集
+ * @property string content, 内容
+ * @property int stock_total, 总库存
+ * @property int stock, 剩余库存
+ * @property int enable, 上下架：1上架，2下架,3草稿箱
+ * @property int inx, 排序ID
+ * @property int cid, 产品分类
+ * @property int hits, 点击数
+ * @property string spec, 规格
+ * @property int rmd, 是否推荐：1是，2否
+ * @property string tags, 标签
+ * @property string cdate, 创建时间
+ */
+class Product {
+
+}
 }

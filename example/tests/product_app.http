@@ -11,14 +11,14 @@ X-APP: {{appId}}
 ### 产品列表
 # Request: sk: 搜索关键字, cid: number 类别id
 # Response: array<{id: number, name: string, price: number, image: string, category: string}>
-# model: module\product\Product
+# model: j\httpDoc\example\model\Product
 # viewType: list
 GET {{host}}/api/product/search?sk=&cid=
 Authorization: {{token}}
 X-APP: {{appId}}
 
 ### 产品详情
-# model: module\product\Product
+# model: j\httpDoc\example\model\Product
 # viewType: detail
 GET {{host}}/api/product/info?id=1
 Authorization: {{token}}
