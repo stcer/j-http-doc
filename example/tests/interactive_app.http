@@ -1,0 +1,67 @@
+// module: 交互模块
+### 收藏列表
+GET {{host}}/api/interactive/fav/search
+Authorization: {{token}}
+X-APP: {{appId}}
+
+### 收藏添加
+# info_type=product,article
+# product:产品，article:图文
+GET {{host}}/api/interactive/fav/add?info_type=product&info_id=8
+Authorization: {{token}}
+X-APP: {{appId}}
+
+### 收藏取消
+GET {{host}}/api/interactive/fav/cancel?info_type=article&info_id=8
+Authorization: {{token}}
+X-APP: {{appId}}
+
+### 收藏状态
+GET {{host}}/api/interactive/fav/check?info_type=article&info_id=1
+Authorization: {{token}}
+X-APP: {{appId}}
+
+### 留言列表
+GET {{host}}/api/interactive/message/search?info_type=
+Authorization: {{token}}
+X-APP: {{appId}}
+
+### 留言添加
+# info_type=product,article
+# product:产品，article:图文
+# model: j\httpDoc\example\model\Message
+POST {{host}}/api/interactive/message/add
+Authorization: {{token}}
+X-APP: {{appId}}
+content-type: application/json
+
+{
+  "info_type": "product",
+  "info_id": 2,
+  "content": "this is my teacher",
+  "clue_id": "17e55425f1d892289f78270e0806e913"
+}
+
+### 访问记录列表
+GET {{host}}/api/interactive/access/search?info_type=
+X-APP: {{appId}}
+
+### 访问记录详情
+GET {{host}}/api/interactive/access/info?id=1
+X-APP: {{appId}}
+Authorization: {{token}}
+
+### 访问记录添加
+# info_type=product,article
+# product:产品，article:图文
+# model: j\httpDoc\example\model\Access
+POST {{host}}/api/interactive/access/add
+Authorization: {{token}}
+X-APP: {{appId}}
+content-type: application/json
+
+{
+  "info_type": "product",
+  "info_id": 1,
+  "path": "page/index"
+}

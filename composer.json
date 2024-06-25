@@ -1,0 +1,31 @@
+{
+    "name": "stcer/j-http-doc",
+    "description": "Gen api doc from some.http file",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "stcer",
+            "email": "7443930@qq.com"
+        }
+    ],
+
+    "autoload": {
+        "psr-4": {
+            "j\\httpDoc\\": "src/"
+        }
+    },
+
+    "require": {
+        "php": ">=7.2.0"
+    },
+
+    "suggest": {
+    },
+
+    "require-dev": {
+    },
+
+    "config" : {
+        "secure-http" : false
+    }
+}

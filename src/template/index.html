@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Api document</title>
+  <!-- 新 Bootstrap 核心 CSS 文件 -->
+  <link rel="stylesheet"
+        href="//lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/twitter-bootstrap/3.3.5/css/bootstrap.min.css">
+  <link rel="stylesheet"
+        href="https://s3.pstatp.com/cdn/element-ui/2.1.0/theme-chalk/index.css">
+  <style>
+      .method-list {
+          line-height: 200%;
+          font-size: 14px;
+      }
+
+      .method-list li {
+          border-bottom: 1px solid #f1f1f1;
+          padding-top: 6px;
+          padding-bottom: 6px;
+      }
+
+      .method-list .badge {
+          float: right;
+          cursor: pointer;
+      }
+
+      .list-group a {
+          display: block;
+      }
+
+      .table > tbody > tr > td, .table > tbody > tr > th, .table > tfoot > tr > td, .table > tfoot > tr > th, .table > thead > tr > td, .table > thead > tr > th {
+          padding: 15px;
+      }
+  </style>
+</head>
+<body style="padding-top: 70px;">
+<div id="main">
+  <nav class="navbar navbar-fixed-top navbar-inverse">
+    <div class="container">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="?">Api document</a>
+        <ul class="nav navbar-nav navbar-inverse">
+          <li v-for="project in projects" :class="isActiveProject(project) ? 'active' : ''" key="{{project.id}}"><a
+              @click="changeProject(project)">{{project.name}}</a>
+          </li>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-3">
+        <ul class="nav  nav-pills nav-stacked">
+          <li v-for="module in modules" @click="changeModule(module)" :class="isActiveModule(module) ? 'active' : ''"><a>{{module.name}}</a></li>
+        </ul>
+      </div>
+      <div class="col-md-9" id="main">
+        <h3 v-if="module" style="margin-top: 0">{{module.name}}</h3>
+        <table class="table table-hover">
+          <thead>
+          <tr>
+            <th style="min-width: 100px; max-width: 200px">接口名称</th>
+            <th style="width: 100px">请求方法</th>
+            <th style="min-width: 200px">请求地址</th>
+            <th style="min-width: 200px;">操作</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="(api, key) in apiList" @click="seeApi(api)">
+            <td>{{api.label}}</td>
+            <td>{{api.method}}</td>
+            <td>{{api.path}}</td>
+            <td><a @click="apiShow(api)" class="button">详情</a></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <el-dialog
+    v-if="api"
+    :title="api.label"
+    :visible.sync="apiDialogVisible"
+    width="50%"
+    @close="apiHide"
+    append-to-body
+  >
+
+    <h3 style="margin-top: 0">{{api.method}} {{api.path}}</h3>
+
+    <div v-if="api.annotation" class="bg-info" style="padding: 10px; margin-bottom: 10px; line-height: 120%">
+      <pre style="border: none; background: none">{{api.annotation}}</pre>
+    </div>
+
+    <div v-if="api.query">
+      query
+      <pre>{{api?.query?.map(q => `${q.key}: ${q.value}`).join("\n")}}</pre>
+    </div>
+    <div v-if="api.headers">
+      header
+      <pre>{{api?.headers?.join("\n")}}</pre>
+    </div>
+    <div v-if="api.body">
+      body
+      <pre>{{api.body}}</pre>
+    </div>
+    <div v-if="api.model">
+      <el-tabs v-model="activeName">
+        <el-tab-pane label="model.field" name="first">
+          <table class="table table-hover">
+            <thead>
+            <tr>
+              <th>字段名</th>
+              <th>字段类型</th>
+              <th>备注</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-for="field in api?.model.fields||[]">
+              <td>{{field.name}}</td>
+              <td>{{field.type}}</td>
+              <td>{{field.label}}</td>
+            </tr>
+            </tbody>
+          </table>
+        </el-tab-pane>
+        <el-tab-pane label="model.doc" name="second">
+          <pre>{{api.model?.annotation}}</pre>
+        </el-tab-pane>
+      </el-tabs>
+    </div>
+    <div slot="footer" class="dialog-footer">
+      <div v-if="api.viewType === 'detail'">
+        <el-button type="primary">Gen antd form</el-button>
+        <el-button type="primary">Gen taro form</el-button>
+      </div>
+      <div v-if="api.viewType === 'list'">
+        <el-button type="primary">Gen antd lists</el-button>
+      </div>
+    </div>
+  </el-dialog>
+
+  <script type="text/javascript" src="//lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/jquery/2.1.4/jquery.min.js"></script>
+  <script type="text/javascript"
+          src="//lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/twitter-bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="//lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/vue/2.2.2/vue.min.js"></script>
+  <script type="text/javascript" src="https://s3.pstatp.com/cdn/element-ui/2.1.0/index.js"></script>
+  <script>
+    const API_URL = 'api.php'
+    var apiUrl = () => API_URL
+    var app = new Vue({
+      data: () => {
+        return {
+          project: '',
+          projects: [],
+          modules: [],
+          module: null,
+          api: null,
+          apiDialogVisible: false,
+          activeName: 'first'
+        }
+      },
+      created () {
+        this.request('GET', apiUrl(), {action: 'projects'}, (data) => {
+          this.projects = data || []
+          if (Array.isArray(data) && data.length > 0) {
+            this.changeProject(data[0])
+          }
+        })
+      },
+      methods: {
+        request (method, url, params, callback) {
+          $.ajax({
+            url,
+            type: method,
+            data: params,
+            success: (res) => {
+              if (res.code === 200) {
+                callback(res.data)
+              } else {
+                alert(res.message)
+              }
+            }
+          })
+        },
+
+        isActiveProject (project) {
+          return project.key === this.project.key
+        },
+
+        changeProject (project) {
+          this.project = project
+          this.modules = []
+          this.module = null
+          this.request('GET', apiUrl(), {action: 'api', project: project.key}, (data) => {
+            this.modules = data
+            if (Array.isArray(data) && data.length > 0) {
+              this.changeModule(data[0])
+            }
+          })
+        },
+
+        changeModule (module) {
+          this.module = module
+        },
+
+        isActiveModule (module) {
+          return module.name === this.module.name
+        },
+
+        apiShow (api) {
+          this.api = api
+          this.apiDialogVisible = true
+        },
+
+        apiHide () {
+          this.apiDialogVisible = false
+        }
+      },
+      computed: {
+        apiList () {
+          return this?.module?.api || []
+        }
+      }
+    }).$mount('#main')
+  </script>
+</body>
+</html>
