@@ -44,6 +44,7 @@
           <li v-for="project in projects" :class="isActiveProject(project) ? 'active' : ''" key="{{project.id}}"><a
               @click="changeProject(project)">{{project.name}}</a>
           </li>
+        </ul>
       </div>
     </div>
   </nav>
