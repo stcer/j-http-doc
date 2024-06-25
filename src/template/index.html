@@ -88,7 +88,6 @@
     @close="apiHide"
     append-to-body
   >
-
     <h3 style="margin-top: 0">{{api.method}} {{api.path}}</h3>
 
     <div v-if="api.annotation" class="bg-info" style="padding: 10px; margin-bottom: 10px; line-height: 120%">
@@ -142,90 +141,91 @@
       </div>
     </div>
   </el-dialog>
+</div>
 
-  <script type="text/javascript" src="//lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/jquery/2.1.4/jquery.min.js"></script>
-  <script type="text/javascript"
-          src="//lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/twitter-bootstrap/3.3.5/js/bootstrap.min.js"></script>
-  <script type="text/javascript" src="//lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/vue/2.2.2/vue.min.js"></script>
-  <script type="text/javascript" src="https://s3.pstatp.com/cdn/element-ui/2.1.0/index.js"></script>
-  <script>
-    const API_URL = 'api.php'
-    var apiUrl = () => API_URL
-    var app = new Vue({
-      data: () => {
-        return {
-          project: '',
-          projects: [],
-          modules: [],
-          module: null,
-          api: null,
-          apiDialogVisible: false,
-          activeName: 'first'
+<script type="text/javascript" src="//lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/jquery/2.1.4/jquery.min.js"></script>
+<script type="text/javascript"
+        src="//lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/twitter-bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="//lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/vue/2.2.2/vue.min.js"></script>
+<script type="text/javascript" src="https://s3.pstatp.com/cdn/element-ui/2.1.0/index.js"></script>
+<script>
+  const API_URL = 'api.php'
+  var apiUrl = () => API_URL
+  var app = new Vue({
+    data: () => {
+      return {
+        project: '',
+        projects: [],
+        modules: [],
+        module: null,
+        api: null,
+        apiDialogVisible: false,
+        activeName: 'first'
+      }
+    },
+    created () {
+      this.request('GET', apiUrl(), {action: 'projects'}, (data) => {
+        this.projects = data || []
+        if (Array.isArray(data) && data.length > 0) {
+          this.changeProject(data[0])
         }
-      },
-      created () {
-        this.request('GET', apiUrl(), {action: 'projects'}, (data) => {
-          this.projects = data || []
-          if (Array.isArray(data) && data.length > 0) {
-            this.changeProject(data[0])
+      })
+    },
+    methods: {
+      request (method, url, params, callback) {
+        $.ajax({
+          url,
+          type: method,
+          data: params,
+          success: (res) => {
+            if (res.code === 200) {
+              callback(res.data)
+            } else {
+              alert(res.message)
+            }
           }
         })
       },
-      methods: {
-        request (method, url, params, callback) {
-          $.ajax({
-            url,
-            type: method,
-            data: params,
-            success: (res) => {
-              if (res.code === 200) {
-                callback(res.data)
-              } else {
-                alert(res.message)
-              }
-            }
-          })
-        },
 
-        isActiveProject (project) {
-          return project.key === this.project.key
-        },
-
-        changeProject (project) {
-          this.project = project
-          this.modules = []
-          this.module = null
-          this.request('GET', apiUrl(), {action: 'api', project: project.key}, (data) => {
-            this.modules = data
-            if (Array.isArray(data) && data.length > 0) {
-              this.changeModule(data[0])
-            }
-          })
-        },
-
-        changeModule (module) {
-          this.module = module
-        },
-
-        isActiveModule (module) {
-          return module.name === this.module.name
-        },
-
-        apiShow (api) {
-          this.api = api
-          this.apiDialogVisible = true
-        },
-
-        apiHide () {
-          this.apiDialogVisible = false
-        }
+      isActiveProject (project) {
+        return project.key === this.project.key
       },
-      computed: {
-        apiList () {
-          return this?.module?.api || []
-        }
+
+      changeProject (project) {
+        this.project = project
+        this.modules = []
+        this.module = null
+        this.request('GET', apiUrl(), {action: 'api', project: project.key}, (data) => {
+          this.modules = data
+          if (Array.isArray(data) && data.length > 0) {
+            this.changeModule(data[0])
+          }
+        })
+      },
+
+      changeModule (module) {
+        this.module = module
+      },
+
+      isActiveModule (module) {
+        return module.name === this.module.name
+      },
+
+      apiShow (api) {
+        this.api = api
+        this.apiDialogVisible = true
+      },
+
+      apiHide () {
+        this.apiDialogVisible = false
       }
-    }).$mount('#main')
-  </script>
+    },
+    computed: {
+      apiList () {
+        return this?.module?.api || []
+      }
+    }
+  }).$mount('#main')
+</script>
 </body>
 </html>
