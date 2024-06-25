@@ -58,24 +58,38 @@
       </div>
       <div class="col-md-9" id="main">
         <h3 v-if="module" style="margin-top: 0">{{module.name}}</h3>
-        <table class="table table-hover">
-          <thead>
-          <tr>
-            <th style="min-width: 100px; max-width: 200px">接口名称</th>
-            <th style="width: 100px">请求方法</th>
-            <th style="min-width: 200px">请求地址</th>
-            <th style="min-width: 200px;">操作</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr v-for="(api, key) in apiList" @click="seeApi(api)">
-            <td>{{api.label}}</td>
-            <td>{{api.method}}</td>
-            <td>{{api.path}}</td>
-            <td><a @click="apiShow(api)" class="button">详情</a></td>
-          </tr>
-          </tbody>
-        </table>
+        <el-table
+            ref="multipleTable"
+            :data="apiList"
+            tooltip-effect="dark"
+            style="width: 100%"
+            @selection-change="handleSelectionChange">
+          <el-table-column
+                  type="selection"
+                  width="55">
+          </el-table-column>
+          <el-table-column
+                  prop="label"
+                  label="接口名称"
+                  width="120">
+          </el-table-column>
+          <el-table-column
+                  prop="method"
+                  label="请求方法"
+                  show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column
+                  prop="path"
+                  label="请求地址">
+          </el-table-column>
+          <el-table-column
+                  fixed="right"
+                  label="操作">
+            <template slot-scope="scope">
+              <a @click="apiShow(scope.row)" class="button">详情</a>
+            </template>
+          </el-table-column>
+        </el-table>
       </div>
     </div>
   </div>
@@ -146,7 +160,7 @@
 <script type="text/javascript" src="//lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/jquery/2.1.4/jquery.min.js"></script>
 <script type="text/javascript"
         src="//lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/twitter-bootstrap/3.3.5/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="//lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/vue/2.2.2/vue.min.js"></script>
+<script type="text/javascript" src="//lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/vue/2.5.13/vue.min.js"></script>
 <script type="text/javascript" src="https://s3.pstatp.com/cdn/element-ui/2.14.1/index.js"></script>
 <script>
   const API_URL = 'api.php'
@@ -160,7 +174,8 @@
         module: null,
         api: null,
         apiDialogVisible: false,
-        activeName: 'first'
+        activeName: 'first',
+        multipleSelection: []
       }
     },
     created () {
@@ -218,6 +233,10 @@
 
       apiHide () {
         this.apiDialogVisible = false
+      },
+
+      handleSelectionChange(val) {
+        this.multipleSelection = val;
       }
     },
     computed: {
