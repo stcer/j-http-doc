@@ -53,7 +53,7 @@
     <div class="row">
       <div class="col-md-3">
         <ul class="nav nav-pills nav-stacked">
-          <li v-for="module in modules" @click="changeModule(module)" :class="isActiveModule(module) ? 'active' : ''"><a>{{module.name}}</a></li>
+          <li v-for="m in modules" @click="changeModule(m)" :class="isActiveModule(m) ? 'active' : ''"><a>{{m.name}}</a></li>
         </ul>
       </div>
       <div class="col-md-9" id="main">
