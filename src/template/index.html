@@ -41,8 +41,8 @@
       <div class="navbar-header">
         <a class="navbar-brand" href="?">Api document</a>
         <ul class="nav navbar-nav navbar-inverse">
-          <li v-for="project in projects" :class="isActiveProject(project) ? 'active' : ''" key="{{project.id}}"><a
-              @click="changeProject(project)">{{project.name}}</a>
+          <li v-for="project in projects" :class="isActiveProject(project) ? 'active' : ''" key="{{project.id}}">
+            <a @click="changeProject(project)">{{project.name}}</a>
           </li>
         </ul>
       </div>
@@ -96,7 +96,7 @@
 
     <div v-if="api.query">
       query
-      <pre>{{api?.query?.map(q => `${q.key}: ${q.value}`).join("\n")}}</pre>
+      <pre>{{api?.query?.map(q => `${q.key}: ${q.value}`).join("\n") }}</pre>
     </div>
     <div v-if="api.headers">
       header
