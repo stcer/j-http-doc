@@ -39,7 +39,7 @@ class DocParser
     public function parseContent($content)
     {
         $requests = explode('###', $content);
-        $moduleMeta = array_shift($requests);
+        $moduleMeta = trim(array_shift($requests));
         $moduleName = '未知';
         $moduleDesc = '';
         if (preg_match('#//\s*module:\s*(.+)#i', $moduleMeta, $r)) {
