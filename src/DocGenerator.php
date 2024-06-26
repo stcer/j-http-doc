@@ -6,8 +6,6 @@ use Exception;
 use function file_exists;
 use function file_get_contents;
 use function json_decode;
-use function time;
-use function var_dump;
 
 class DocGenerator
 {
