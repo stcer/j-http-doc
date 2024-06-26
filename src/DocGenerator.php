@@ -3,7 +3,11 @@
 namespace j\httpDoc;
 
 use Exception;
+use function file_exists;
 use function file_get_contents;
+use function json_decode;
+use function time;
+use function var_dump;
 
 class DocGenerator
 {
@@ -62,9 +66,15 @@ class DocGenerator
     {
         $projects = [];
         foreach ($this->defines as $key => $define) {
+            $env = null;
+            if ($define['env_file'] && file_exists($define['env_file'])) {
+                $env = json_decode(file_get_contents($define['env_file']), true);
+            }
+
             $projects[] = [
                 'key' => $key,
-                'name' => $define['name']
+                'name' => $define['name'],
+                'env' => $env
             ];
         }
         return $projects;

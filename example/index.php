@@ -17,6 +17,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'OPTIONS'
 $defines = [
     'miniApp' => [
         'name' => '小程序接口',
+        'env_file' => __DIR__ . '/tests/http-client.env.json',
         'files' => [
             __DIR__ . '/tests/product_app.http',
             __DIR__ . '/tests/interactive_app.http',
@@ -30,6 +31,7 @@ $defines = [
     ],
     'H5' => [
         'name' => 'H5',
+        'desc' => 'H5',
         'files' => [
         ]
     ],

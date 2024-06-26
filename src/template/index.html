@@ -50,6 +50,17 @@
   </nav>
 
   <div class="container">
+    <div v-if="project?.env" class="row" style="margin-bottom: 20px;">
+      <div class="col-md-12">
+        <el-collapse v-model="projectEnv" accordion>
+          <el-collapse-item title=" 环境变量" name="env">
+            <div class="bg-info" style="padding: 10px; margin-bottom: 20px; line-height: 120%">
+              <pre style="border: none; background: none">{{projectEnvJsonStr}}</pre>
+            </div>
+          </el-collapse-item>
+        </el-collapse>
+      </div>
+    </div>
     <div class="row">
       <div class="col-md-3">
         <ul class="nav nav-pills nav-stacked">
@@ -58,7 +69,7 @@
       </div>
       <div class="col-md-9" id="main">
         <h3 v-if="activeModule" style="margin-top: 0">{{activeModule.name}}</h3>
-        <div v-if="activeModule.desc" class="bg-info" style="padding: 10px; margin-bottom: 10px; line-height: 120%">
+        <div v-if="activeModule?.desc" class="bg-info" style="padding: 10px; margin-bottom: 10px; line-height: 120%">
           <pre style="border: none; background: none">{{activeModule.desc}}</pre>
         </div>
         <table class="table table-hover">
@@ -159,6 +170,7 @@
       return {
         projects: [],
         project: '',
+        projectEnv: '',
         modules: [],
         activeModule: null,
         api: null,
@@ -230,6 +242,9 @@
     computed: {
       apiList () {
         return this.activeModule?.api || []
+      },
+      projectEnvJsonStr () {
+        return JSON.stringify(this?.project?.env, null, 2)
       }
     }
   }).$mount('#main')
