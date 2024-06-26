@@ -3,6 +3,7 @@
 namespace j\httpDoc;
 
 use ReflectionClass;
+use function array_filter;
 use function array_map;
 use function array_shift;
 use function call_user_func;
@@ -15,6 +16,7 @@ use function preg_match;
 use function preg_replace;
 use function str_replace;
 use function trim;
+use function var_dump;
 
 class DocParser
 {
@@ -36,14 +38,19 @@ class DocParser
 
     public function parseContent($content)
     {
-        $moduleName = '未知';
-        if (preg_match('#//\s*module:\s*(.+)#i', $content, $r)) {
-            $moduleName = $r[1];
-            $content = preg_replace('#//\s*module:\s*(.+)#i', '', $content);
-        }
-
         $requests = explode('###', $content);
-        array_shift($requests);
+        $moduleMeta = array_shift($requests);
+        $moduleName = '未知';
+        $moduleDesc = '';
+        if (preg_match('#//\s*module:\s*(.+)#i', $moduleMeta, $r)) {
+            $moduleName = $r[1];
+            $moduleDescLines = explode("\n", $moduleMeta);
+            array_shift($moduleDescLines);
+            $moduleDescLines =array_map(function ($line) {
+                return trim(preg_replace('/^\s*(\/\/|#)\s*/', '', $line));
+            }, $moduleDescLines);
+            $moduleDesc = implode("\n", array_filter($moduleDescLines));
+        }
 
         $parsedRequests = [];
         foreach ($requests as $req) {
@@ -81,7 +88,11 @@ class DocParser
             ];
         }
 
-        return ['name' => $moduleName, 'api' => $parsedRequests];
+        return [
+            'name' => $moduleName,
+            'desc' => $moduleDesc,
+            'api' => $parsedRequests
+        ];
     }
 
     protected function parsePath($match, &$api)

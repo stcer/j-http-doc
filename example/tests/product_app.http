@@ -1,5 +1,9 @@
 
 // module: 产品信息
+// 企业产品的分类展示，搜索，详情
+// 原型地址: http://localhost:8080/product/index.html
+// 主要流程参考：http://localhost:8080/product/index.html
+// 任务列表：参考tapd
 
 ### 产品分类
 # 获取产品分类数组列表

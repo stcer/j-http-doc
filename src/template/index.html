@@ -58,6 +58,9 @@
       </div>
       <div class="col-md-9" id="main">
         <h3 v-if="activeModule" style="margin-top: 0">{{activeModule.name}}</h3>
+        <div v-if="activeModule.desc" class="bg-info" style="padding: 10px; margin-bottom: 10px; line-height: 120%">
+          <pre style="border: none; background: none">{{activeModule.desc}}</pre>
+        </div>
         <table class="table table-hover">
           <thead>
           <tr>
