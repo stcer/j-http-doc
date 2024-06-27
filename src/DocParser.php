@@ -30,6 +30,16 @@ class DocParser
         $this->plugin = $plugin;
     }
 
+    public function setPlugin($type, callable $plugin)
+    {
+        $this->plugin[$type][] = $plugin;
+    }
+
+    public function resetPlugin()
+    {
+        $this->plugin = [];
+    }
+
     public function parse($filePath)
     {
         $content = file_get_contents($filePath);
@@ -38,21 +48,14 @@ class DocParser
 
     public function parseContent($content)
     {
+        $this->normalizeContent($content);
         $requests = explode('###', $content);
-        $moduleMeta = trim(array_shift($requests));
-        $moduleName = '未知';
-        $moduleDesc = '';
-        if (preg_match('#//\s*module:\s*(.+)#i', $moduleMeta, $r)) {
-            $moduleName = $r[1];
-            $moduleDescLines = explode("\n", $moduleMeta);
-            array_shift($moduleDescLines);
-            $moduleDescLines =array_map(function ($line) {
-                return trim(preg_replace('/^\s*(\/\/|#)\s*/', '', $line));
-            }, $moduleDescLines);
-            $moduleDesc = implode("\n", array_filter($moduleDescLines));
-        }
 
-        $parsedRequests = [];
+        // request name and desc
+        $moduleMeta = trim(array_shift($requests));
+        list($moduleName, $moduleDesc) = $this->parseModuleMeta($moduleMeta);
+
+        $apis = [];
         foreach ($requests as $req) {
             $lines = array_map('trim', explode("\n", trim($req)));
             $headers = [];
@@ -66,6 +69,7 @@ class DocParser
                 if (empty($line)) {
                     continue;
                 }
+
                 if (preg_match('#(GET|POST)\s+(.+?)$#i', $line, $r)) {
                     $this->parsePath($r, $api);
                 } elseif (preg_match('/^[A-Za-z-]+: .+/', $line)) {
@@ -81,18 +85,45 @@ class DocParser
                 }
             }
 
-            $parsedRequests[] = $api + [
-                'headers' => $headers,
-                'body' => implode("\n", $body),
-                'annotation' => implode("\n", $annotation),
-            ];
+            if (isset($api['path']) && $api['path']) {
+                $apis[] = $api + [
+                    'headers' => $headers,
+                    'body' => implode("\n", $body),
+                    'annotation' => implode("\n", $annotation),
+                ];
+            }
         }
 
         return [
             'name' => $moduleName,
             'desc' => $moduleDesc,
-            'api' => $parsedRequests
+            'api' => $apis
         ];
+    }
+
+    protected function normalizeContent(& $content)
+    {
+        $this->pluginNormalizeRequest($content);
+    }
+
+    /**
+     * @param string $moduleMeta
+     * @return array
+     */
+    protected function parseModuleMeta(string $moduleMeta): array
+    {
+        $name = '未知';
+        $desc = '';
+        if (preg_match('#//\s*module:\s*(.+)#i', $moduleMeta, $r)) {
+            $name = $r[1];
+            $lines = explode("\n", $moduleMeta);
+            array_shift($lines); // delete name
+            $lines = array_map(function ($line){
+                return trim(preg_replace('/^\s*(\/\/|#)\s*/', '', $line));
+            }, $lines);
+            $desc = implode("\n", array_filter($lines));
+        }
+        return array($name, $desc);
     }
 
     protected function parsePath($match, &$api)
@@ -108,6 +139,7 @@ class DocParser
                 $query[] = ['key' => $k, 'value' => $v, 'type' => 'string'];
             }
         }
+
         $api['path'] = $path;
         $api['method'] = $method;
         $api['url'] = $url;
@@ -148,12 +180,21 @@ class DocParser
 
     protected function pluginMatch($line, &$api)
     {
-        foreach ($this->plugin as $plugin) {
+        $plugins = $this->plugin[PlugType::PLUGIN_MATCH] ?? [];
+        foreach ($plugins as $plugin) {
             $rs = call_user_func($plugin, $line, $api);
             if ($rs) {
                 return $rs;
             }
         }
         return false;
+    }
+
+    protected function pluginNormalizeRequest(&$request)
+    {
+        $plugins = $this->plugin[PlugType::PLUGIN_NORMALIZE_REQUEST] ?? [];
+        foreach ($plugins as $plugin) {
+            $request = call_user_func($plugin, $request);
+        }
     }
 }

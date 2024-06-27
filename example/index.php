@@ -3,6 +3,8 @@
 namespace j\httpDoc;
 
 use function header;
+use function preg_match;
+use function preg_replace;
 
 require(__DIR__ . '/../vendor/autoload.php');
 require(__DIR__ . '/model/Demo.php');
@@ -40,4 +42,7 @@ $defines = [
 $docGenerator = new DocGenerator($defines);
 $docGenerator->enable = true;
 $docGenerator->apiUrl = 'index.php';
+$docGenerator->getParser()->setPlugin(PlugType::PLUGIN_NORMALIZE_REQUEST, function($content) {
+    return preg_replace('/#{4,}[^#]+?#+/', '', $content);
+});
 $docGenerator->handle($_GET['action'] ?? 'html', $_REQUEST);

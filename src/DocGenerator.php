@@ -91,4 +91,12 @@ class DocGenerator
         }
         return $apis;
     }
+
+    /**
+     * @return DocParser|mixed
+     */
+    public function getParser()
+    {
+        return $this->parser;
+    }
 }
