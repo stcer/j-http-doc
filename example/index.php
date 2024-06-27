@@ -3,7 +3,6 @@
 namespace j\httpDoc;
 
 use function header;
-use function preg_match;
 use function preg_replace;
 
 require(__DIR__ . '/../vendor/autoload.php');
@@ -25,12 +24,14 @@ $defines = [
             __DIR__ . '/tests/interactive_app.http',
         ]
     ],
+
     'shopAdmin' => [
         'name' => '商家管理',
         'files' => [
             __DIR__ . '/tests/interactive_app.http',
         ]
     ],
+
     'H5' => [
         'name' => 'H5',
         'desc' => 'H5',

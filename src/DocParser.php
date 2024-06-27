@@ -16,7 +16,6 @@ use function preg_match;
 use function preg_replace;
 use function str_replace;
 use function trim;
-use function var_dump;
 
 class DocParser
 {
@@ -86,11 +85,12 @@ class DocParser
             }
 
             if (isset($api['path']) && $api['path']) {
-                $apis[] = $api + [
+                $api = $api + [
                     'headers' => $headers,
                     'body' => implode("\n", $body),
                     'annotation' => implode("\n", $annotation),
                 ];
+                $apis[] = $this->normalizeApi($api);
             }
         }
 
@@ -104,6 +104,12 @@ class DocParser
     protected function normalizeContent(& $content)
     {
         $this->pluginNormalizeRequest($content);
+    }
+
+    protected function normalizeApi($api)
+    {
+        $api['path'] = str_replace('{{host}}', '', $api['path']);
+        return $api;
     }
 
     /**
@@ -130,7 +136,8 @@ class DocParser
     {
         $query = null;
         $method = $match[1];
-        $url = str_replace('{{host}}', '', $match[2]);
+//        $url = str_replace('{{host}}', '', $match[2]);
+        $url = $match[2];
         $parts = parse_url($url);
         $path = $parts['path'];
         if (isset($parts['query'])) {
