@@ -32,11 +32,13 @@ class DocParser
     public function setPlugin($type, callable $plugin)
     {
         $this->plugin[$type][] = $plugin;
+        return $this;
     }
 
     public function resetPlugin()
     {
         $this->plugin = [];
+        return $this;
     }
 
     public function parse($filePath)
@@ -109,6 +111,7 @@ class DocParser
     protected function normalizeApi($api)
     {
         $api['path'] = str_replace('{{host}}', '', $api['path']);
+        $this->pluginNormalizeApi($api);
         return $api;
     }
 
@@ -202,6 +205,14 @@ class DocParser
         $plugins = $this->plugin[PlugType::PLUGIN_NORMALIZE_REQUEST] ?? [];
         foreach ($plugins as $plugin) {
             $request = call_user_func($plugin, $request);
+        }
+    }
+
+    protected function pluginNormalizeApi(&$api)
+    {
+        $plugins = $this->plugin[PlugType::PLUGIN_NORMALIZE_API] ?? [];
+        foreach ($plugins as $plugin) {
+            $api = call_user_func($plugin, $api);
         }
     }
 }

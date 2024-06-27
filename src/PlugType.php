@@ -7,4 +7,6 @@ class PlugType
     const PLUGIN_MATCH = 'match';
 
     const PLUGIN_NORMALIZE_REQUEST = 'request';
+
+    const PLUGIN_NORMALIZE_API = 'api';
 }

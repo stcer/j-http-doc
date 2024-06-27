@@ -33,3 +33,7 @@ X-APP: {{appId}}
 GET {{host}}/api/product/info?id=1
 Authorization: {{token}}
 X-APP: {{appId}}
+
+### 店员带来的用户 - 新接口
+GET http://wechat-h5-dev.jiuzheng.com/api.php?api=/wechat/ji/activity/stat/user&page=1&aid=1&share_uid=640&token=api-test-yh
+X-APP-CLIENT: WECHAT

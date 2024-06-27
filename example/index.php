@@ -4,6 +4,7 @@ namespace j\httpDoc;
 
 use function header;
 use function preg_replace;
+use function var_dump;
 
 require(__DIR__ . '/../vendor/autoload.php');
 require(__DIR__ . '/model/Demo.php');
@@ -43,7 +44,17 @@ $defines = [
 $docGenerator = new DocGenerator($defines);
 $docGenerator->enable = true;
 $docGenerator->apiUrl = 'index.php';
-$docGenerator->getParser()->setPlugin(PlugType::PLUGIN_NORMALIZE_REQUEST, function($content) {
-    return preg_replace('/#{4,}[^#]+?#+/', '', $content);
-});
+$docGenerator->getParser()
+    ->setPlugin(PlugType::PLUGIN_NORMALIZE_REQUEST, function ($content){
+        return preg_replace('/#{4,}[^#]+?#+/', '', $content);
+    })
+    ->setPlugin(PlugType::PLUGIN_NORMALIZE_API, function ($api){
+        foreach ($api['query'] ?? [] as $param) {
+            if ($param['key'] == 'api') {
+                $api['path'] = $param['value'];
+            }
+        }
+        return $api;
+    })
+;
 $docGenerator->handle($_GET['action'] ?? 'html', $_REQUEST);
